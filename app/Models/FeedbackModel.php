@@ -9,6 +9,15 @@ class FeedbackModel extends Model
     protected $table = 'feedback';
     protected $primaryKey = 'feedback_id';
 
+    public function getallfeedback() {
+        $query = "SELECT * FROM feedback";
+        return $this->db->query($query)->getResultArray();
+    }
+    public function getallaverageratings(){
+        $query = "SELECT order_id, AVG(star) as avg_star FROM feedback GROUP BY order_id";
+        return $this->db->query($query)->getResultArray();
+    }
+
     public function getFeedbackByOrderId($orderId) {
         $query = "SELECT * FROM feedback WHERE order_id = ? ORDER BY created_at DESC";
         return $this->db->query($query, [$orderId])->getResultArray();
@@ -33,6 +42,7 @@ class FeedbackModel extends Model
         $query = "DELETE FROM feedback WHERE feedback_id = ?";
         return $this->db->query($query, [$feedbackId]);
     }
+    
     public function getFeedbackByOrderIdAndUserId($orderId, $userId) {
         $query = "SELECT * FROM feedback WHERE order_id = ? AND user_id = ?";
         return $this->db->query($query, [$orderId, $userId])->getRowArray();

@@ -10,6 +10,7 @@ class feedbackController extends BaseController{
         parent::__construct();
         $this->feedbackModel = new FeedbackModel();
     }
+    
     public function submitfeedback($id){
         if(!$this->sessioncheck){
             return redirect()->to('/login');
@@ -46,22 +47,48 @@ class feedbackController extends BaseController{
         if(!$this->sessioncheck){
             return redirect()->to('/login');
         }
-        $feedbackdata = $this->feedbackModel->getFeedbackById($feedbackid);
-        return view('/userpanel/editfeedback', ['feedbackdata'=>$feedbackdata]);
+        if ($this->request->isAJAX()) {
+            $feedbackdata = $this->feedbackModel->getFeedbackById($feedbackid);
+            session()->setFlashdata('info1', lang('messages.feedback_update_success'));
+            return $this->response->setJSON([
+                'success' => true,
+                'data' => $feedbackdata
+            ]);
+        }
     }
 
-    public function submitedit($feedbackid) {
+    public function submitedit($feedbackid){
         if (!$this->sessioncheck) {
             return redirect()->to('/login');
         }
         $feedbacktext = $this->request->getPost('text');
         $feedbackstar = $this->request->getPost('rating');
-        $update = $this->feedbackModel->updateFeedback($feedbackid, $feedbacktext, $feedbackstar); // Use model method
+        if (empty($feedbacktext) || empty($feedbackstar)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => lang('messages.no_category_selected')
+            ]);
+        }
+        $update = $this->feedbackModel->updateFeedback($feedbackid, $feedbacktext, $feedbackstar);
 
+        if ($this->request->isAJAX()) {
+            if ($update) {
+                session()->setFlashdata('info', lang('messages.feedback_update_success'));
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => lang('messages.feedback_update_success')
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => lang('messages.feedback_update_failed')
+                ]);
+            }
+        }
         if ($update) {
-            session()->setFlashdata('info1', lang('messages.feedback_update_success'));
+            session()->setFlashdata('info', lang('messages.feedback_update_success'));
         } else {
-            session()->setFlashdata('info1', lang('messages.feedback_update_failed'));
+            session()->setFlashdata('infos', lang('messages.feedback_update_failed'));
         }
         return redirect()->to("/editfeedback/$feedbackid");
     }

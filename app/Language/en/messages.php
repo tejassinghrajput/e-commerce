@@ -12,5 +12,10 @@ return [
     'feedback_update_success' => 'Feedback has been updated successfully',
     'feedback_update_failed' => 'Unable to update feedback',
     'feedback_delete_success' => 'Feedback has been delete successfully',
-    'feedback_delete_failed' => 'Feedback deletion failed'
+    'feedback_delete_failed' => 'Feedback deletion failed',
+    'categories_error' => 'No orders found matching the selected categories.',
+    'no_search_data' =>  'No products found for the provided name.',
+    'no_search_input' => 'Please enter a search term.',
+    'categories_empty_error' => 'No category selected',
+    'no_category_selected' => 'Please provide both rating and feedback text'
 ];

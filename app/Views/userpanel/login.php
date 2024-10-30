@@ -3,98 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Register Panel</title>
+    <title>Login & Registration Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: #f3f4f6;
+            background: linear-gradient(120deg, #a1c4fd, #c2e9fb);
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            overflow: hidden;
         }
         .panel-container {
             background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            max-width: 800px;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            max-width: 450px;
             width: 100%;
-            display: flex;
-            flex-direction: column;
             overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeIn 0.5s forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .panel-container:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
         }
         .panel-header {
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
             background-color: #2575fc;
             color: #fff;
         }
         .panel-title {
-            font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
         }
         .form-container {
-            padding: 2rem 3rem;
+            padding: 2rem;
         }
         .form-label {
-            font-weight: 500;
+            font-weight: 600;
             color: #333;
         }
         .form-control {
-            border-radius: 0.5rem;
-            padding: 1rem;
+            border-radius: 0.4rem;
+            padding: 0.75rem;
             border: 1px solid #ced4da;
-            transition: border-color 0.3s;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .form-control:focus {
             border-color: #2575fc;
-            box-shadow: none;
+            box-shadow: 0 0 8px rgba(37, 117, 252, 0.2);
         }
         .btn-custom {
             background-color: #2575fc;
-            color: white;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            font-weight: 500;
-            transition: background-color 0.3s;
+            color: #fff;
+            border-radius: 0.4rem;
+            padding: 0.65rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(37, 117, 252, 0.3);
         }
         .btn-custom:hover {
             background-color: #1a5db8;
-            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 117, 252, 0.3);
         }
         .panel-footer {
             text-align: center;
-            padding: 1.5rem;
+            padding: 1rem 1.5rem;
             font-size: 0.9rem;
             background: #f9fafb;
+            color: #666;
         }
         .toggle-link {
             color: #2575fc;
-            font-weight: 500;
+            font-weight: 600;
             text-decoration: none;
         }
         .toggle-link:hover {
             text-decoration: underline;
+            color: #1a5db8;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 576px) {
             .form-container {
                 padding: 1.5rem;
+            }
+        }
+        .panel {
+            display: none;
+        }
+        .panel.active {
+            display: block;
+        }
+        .loading {
+            display: none;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+        }
+        .loading.show {
+            display: block;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px 20px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            z-index: 999;
+            animation: slideIn 0.5s forwards, slideOut 0.5s 2.5s forwards;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
             }
         }
     </style>
 </head>
 <body>
     <div class="panel-container">
-        <div class="panel" id="loginPanel">
+        <div class="panel active" id="loginPanel">
             <div class="panel-header">
                 <h2 class="panel-title">Login</h2>
                 <p>Welcome back! Please login to your account.</p>
             </div>
             <div class="form-container">
-                <form action="/loginUser" method="post">
-                    <div class="mb-4">
+                <form action="/loginUser" method="post" onsubmit="showLoading()">
+                    <div class="mb-3">
                         <label for="loginEmail" class="form-label">Email Address</label>
                         <input type="email" class="form-control" id="loginEmail" name="email" placeholder="Enter your email" required>
                     </div>
@@ -105,14 +175,51 @@
                     <div class="d-grid">
                         <button type="submit" class="btn btn-custom">Login</button>
                     </div>
-                    <span><?php if(isset($message)){ echo $message; } ?></span>
                 </form>
             </div>
             <div class="panel-footer">
-                Don’t have an account? <a href="/register" class="toggle-link">Register here</a>
+                Don’t have an account? <a href="/register" class="toggle-link" onclick="togglePanel()">Register here</a>
             </div>
         </div>
     </div>
+
+    <div class="loading" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="notification" id="notificationPopup"></div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePanel() {
+            const loginPanel = document.getElementById('loginPanel');
+            const registerPanel = document.getElementById('registerPanel');
+            loginPanel.classList.toggle('active');
+            registerPanel.classList.toggle('active');
+        }
+
+        function showLoading() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            loadingSpinner.classList.add('show');
+        }
+
+        function showNotification(message) {
+            const notificationPopup = document.getElementById('notificationPopup');
+            notificationPopup.innerText = message;
+            notificationPopup.style.display = 'block';
+            notificationPopup.classList.add('notification');
+            setTimeout(() => {
+                notificationPopup.style.display = 'none';
+            }, 3000);
+        }
+
+        <?php
+            $message=session()->getFlashdata('message');
+             if (isset($message) && !empty($message)) { ?>
+            showNotification("<?php echo $message; ?>");
+        <?php } ?>
+    </script>
 </body>
 </html>

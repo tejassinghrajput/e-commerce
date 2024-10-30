@@ -27,10 +27,8 @@ class loginController extends BaseController{
             return redirect()->to('/dashboard');
         }
         else{
-            $data=[
-                "message"=>lang('messages.login_failed')
-            ];
-            return view("/userpanel/login",$data);
+            session()->setFlashdata('message', lang('messages.login_failed'));
+        return redirect()->to('/login');
         }
     }
 }

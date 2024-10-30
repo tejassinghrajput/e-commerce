@@ -11,12 +11,14 @@ class UserController extends BaseController{
             $this->sessioncheck=true;
         }
     }
+    
     public function login(){
         if($this->sessioncheck){
             return redirect()->to('/dashboard');
         }
         return view('/userpanel/login.php');
     }
+
     public function register(){
         if($this->sessioncheck){
             return redirect()->to('/dashboard');

@@ -17,19 +17,35 @@ class dashboardController extends BaseController{
     }
 
     public function viewDashboard(){
-        if(!$this->sessioncheck){
+        if (!$this->sessioncheck) {
             return redirect()->to('/login');
+        }
+        $selectedCategories = $this->request->getGet('categories') ?? [];
+        $allOrders = $this->orderModel->getAllOrders();
+        $feedbackdata = $this->feedbackModel->getallaverageratings();
+        $averageratings = [];
+        foreach ($feedbackdata as $feedback) {
+            $averageratings[$feedback['order_id']] = $feedback['avg_star'];
         }
 
-        if(session()->get('email')!==null){
-            $orderdata = $this->orderModel->getAllOrders();
-            session()->setFlashdata('orderdata',$orderdata);
-            return view('/userpanel/dashboard');
+        if (!empty($selectedCategories)) {
+            $filteredOrders = array_filter($allOrders, function($order) use ($selectedCategories) {
+                return in_array($order['category'], $selectedCategories);
+            });
+            $orderdata = empty($filteredOrders) ? ['no_results' => true] : $filteredOrders;
+        } else {
+            $orderdata = $allOrders;
         }
-        else{
-            return redirect()->to('/login');
+        if (empty($orderdata) || (isset($orderdata['no_results']) && $orderdata['no_results'])) {
+            session()->setFlashdata('message', lang('messages.categories_error'));
         }
+        return view('/userpanel/dashboard', [
+            'orderdata' => $orderdata,
+            'averageRatings' => $averageratings,
+            'selectedCategories' => $selectedCategories
+        ]);
     }
+
     public function orderDetails($id){
 
         if(!$this->sessioncheck){
@@ -61,5 +77,54 @@ class dashboardController extends BaseController{
             session()->setFlashdata('feedbackinfo',[]);
         }
         return view('/userpanel/orderdetails');
+    }
+
+    public function searchOrder(){
+        if (!$this->sessioncheck) {
+            return redirect()->to('/login');
+        }
+        $name = $this->request->getPost('search');
+
+        if (empty($name)) {
+            return redirect()->to('/dashboard');
+        }    
+
+        $results = $this->orderModel->searchOrdersByProductName($name);
+
+        if ($results->getNumRows() > 0) {
+            session()->setFlashdata('orderdata', $results->getResultArray());
+        } else {
+            session()->setFlashdata('orderdata', ['no_results'=>true]);
+            session()->setFlashdata('message',lang('messages.no_search_data'));
+        }
+
+        return redirect()->to('/dashboard');
+    }
+
+    public function filterOrders(){
+        if (!$this->sessioncheck) {
+            return redirect()->to('/login');
+        }
+        $selectedCategories = $this->request->getGet('categories') ?? [];
+        if(empty($selectedCategories)){
+            return redirect()->to('/dashboard');
+        }
+        $results = $this->orderModel->getOrdersByCategories($selectedCategories);
+
+        if ($results->getNumRows() > 0) {
+            $orderdata = $results->getResultArray();
+        } else {
+            $orderdata = ['no_results' => true];
+            session()->setFlashdata('message', lang('messages.categories_error'));
+        }
+        $feedbackdata = $this->feedbackModel->getallaverageratings();
+        $averageratings = [];
+        foreach ($feedbackdata as $feedback) {
+            $averageratings[$feedback['order_id']] = $feedback['avg_star'];
+        }
+        session()->set('filtered_orderdata', $orderdata);
+        session()->set('filtered_averageRatings', $averageratings);
+        session()->set('selected_categories', $selectedCategories);
+        return redirect()->to('/dashboard?' . http_build_query(['categories' => $selectedCategories]));
     }
 }
