@@ -447,8 +447,8 @@ if(isset($selectedCategories)){
     </nav>
     <div class="container">
         <div class="header">
-            <form action="/searchOrders" method="post" class="search-bar">
-                <input type="text" name="search" class="search-input" placeholder="Search for orders...">
+            <form action="/searchOrders" method="get" class="search-bar">
+                <input type="text" name="search" class="search-input" placeholder="Search for orders..." value="<?= isset($_GET['search']) ? esc($_GET['search']) : '' ?>">
                 <button type="submit" class="search-btn">
                     <i class="fas fa-search"></i>
                 </button>

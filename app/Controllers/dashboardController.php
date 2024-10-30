@@ -83,22 +83,23 @@ class dashboardController extends BaseController{
         if (!$this->sessioncheck) {
             return redirect()->to('/login');
         }
-        $name = $this->request->getPost('search');
+        $search  = $this->request->getGet('search');
 
-        if (empty($name)) {
+        if (empty($search )) {
             return redirect()->to('/dashboard');
         }    
-
-        $results = $this->orderModel->searchOrdersByProductName($name);
+        $data['search'] = $search;
+        $results = $this->orderModel->searchOrdersByProductName($search );
 
         if ($results->getNumRows() > 0) {
-            session()->setFlashdata('orderdata', $results->getResultArray());
+            $data['orderdata']=$results->getResultArray();
         } else {
-            session()->setFlashdata('orderdata', ['no_results'=>true]);
+            $data['orderdata'] = [];
             session()->setFlashdata('message',lang('messages.no_search_data'));
         }
-
-        return redirect()->to('/dashboard');
+        $data['selectedCategories'] = []; // or fetch from session if you're storing it
+        $data['averageRatings'] = [];
+        return view('userpanel/dashboard', $data);
     }
 
     public function filterOrders(){

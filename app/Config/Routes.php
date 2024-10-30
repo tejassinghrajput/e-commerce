@@ -20,7 +20,7 @@ $routes->get('/logoutUser','UserController::logout');
 $routes->get('/dashboard','dashboardController::viewDashboard');
 
 //search order
-$routes->post('/searchOrders','dashboardController::searchOrder');
+$routes->get('/searchOrders','dashboardController::searchOrder');
 
 //orderdetails
 $routes->get('/vieworderdetail/(:num)','dashboardController::orderDetails/$1');
