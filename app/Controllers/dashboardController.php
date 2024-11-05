@@ -3,17 +3,18 @@
 namespace App\Controllers;
 use App\Models\OrderModel;
 use App\Models\FeedbackModel;
-
+use App\Models\UserModel;
 
 class dashboardController extends BaseController{
 
     protected $orderModel;
     protected $feedbackModel;
-
+    protected $userModel;
     public function __construct(){
         parent::__construct();
         $this->orderModel = new OrderModel();
         $this->feedbackModel = new FeedbackModel();
+        $this->userModel = new UserModel();
     }
 
     public function viewDashboard(){
@@ -97,7 +98,7 @@ class dashboardController extends BaseController{
             $data['orderdata'] = [];
             session()->setFlashdata('message',lang('messages.no_search_data'));
         }
-        $data['selectedCategories'] = []; // or fetch from session if you're storing it
+        $data['selectedCategories'] = [];
         $data['averageRatings'] = [];
         return view('userpanel/dashboard', $data);
     }
@@ -127,5 +128,15 @@ class dashboardController extends BaseController{
         session()->set('filtered_averageRatings', $averageratings);
         session()->set('selected_categories', $selectedCategories);
         return redirect()->to('/dashboard?' . http_build_query(['categories' => $selectedCategories]));
+    }
+
+    public function viewProfile(){
+        if (!$this->sessioncheck) {
+            return redirect()->to('/login');
+        }
+        $userid=$this->session->get('id');
+        $userdetails=$this->userModel->getUserbyID($userid);
+        $this->session->setFlashdata('userdetails', $userdetails);
+        return view("/userpanel/viewprofile");
     }
 }

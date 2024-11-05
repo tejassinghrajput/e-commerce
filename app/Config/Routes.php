@@ -18,6 +18,7 @@ $routes->get('/logoutUser','UserController::logout');
 
 //dashboard
 $routes->get('/dashboard','dashboardController::viewDashboard');
+$routes->get('/viewprofile','dashboardController::viewProfile');
 
 //search order
 $routes->get('/searchOrders','dashboardController::searchOrder');
@@ -40,3 +41,10 @@ $routes->get('/applyFilters','dashboardController::filterOrders');
 
 // Image Controller
 $routes->get('imagecontroller/show/(:any)', 'ImageController::show/$1');
+
+//address
+$routes->post('/addAddress', 'addressController::add');
+$routes->get('/getSavedAddresses', 'addressController::showall');
+$routes->post('/makeDefaultAddress', 'addressController::makedefault');
+$routes->post('/editAddress', 'addressController::edit');
+$routes->post('/deleteAddress', 'addressController::delete');

@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
     <style>
         :root {
             --dashboard--color: #33ccff;
@@ -70,6 +72,7 @@
         .container {
             margin-top: 20px;
             padding: 20px;
+            width: 100%;
             background: transparent;
             border-radius: 0;
             box-shadow: none;
@@ -86,8 +89,8 @@
         }
         .search-bar {
             position: relative;
-            max-width: 600px;
-            margin: 0 auto 30px;
+            width: 100% !important;
+            max-width: 400px !important;
             transform: scale(0.98);
             transition: all 0.3s ease;
         }
@@ -132,9 +135,9 @@
         .category-container {
             background: #ffffff;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 0;
             box-shadow: var(--shadow-sm);
-            margin-bottom: 20px;
+            margin-bottom: 0;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -158,6 +161,38 @@
         }
 
         .category-container:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        .category-containerone {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 0;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-containerone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--dashboard--color), var(--dashboard--color-hover));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            transform-origin: left;
+        }
+
+        .category-containerone:hover::before {
+            transform: scaleX(1);
+        }
+
+        .category-containerone:hover {
             box-shadow: var(--shadow-lg);
             transform: translateY(-2px);
         }
@@ -281,7 +316,7 @@
         .order-card {
             background: #ffffff;
             border: none;
-            border-radius: 8px;
+            border-radius: 0;
             box-shadow: var(--shadow-sm);
             margin-bottom: 20px;
             transition: all 0.3s ease;
@@ -334,14 +369,14 @@
         }
 
         .order-title {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             color: var(--text-primary);
             margin-right: 10px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 70%;
+            max-width: 100%;
         }
 
         .card-text {
@@ -411,6 +446,57 @@
                 margin-bottom: 15px;
             }
         }
+        .navbar .custom-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 1.25rem;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        .custom-btn:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: var(--dashboard--color);
+        }
+        
+        .dropbtn {
+        background-color: #04AA6D;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        }
+
+        .dropdown {
+        position: relative;
+        display: inline-block;
+        }
+
+        .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        }
+
+        .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        }
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+            background-color: #3e8e41;
+        }
+
     </style>
 </head>
 <?php 
@@ -431,29 +517,37 @@ if(isset($selectedCategories)){
 }
 ?>
 <body>
-    <nav class="navbar">
-        <div class="d-flex justify-content-between align-items-center w-100">
+    <nav class="navbar" style="height: 60px;">
+        <div class="d-flex justify-content-between align-items-center w-100 h-100">
             <div>
                 <a href="/dashboard" class="nav-link me-3">
-                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-            </a>
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
             </div>
-            <div>
-                <a href="/logoutUser" class="logout-btn">
-                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+            <div class="d-flex align-items-center">
+                <form action="/searchOrders" method="get" class="search-bar me-2 d-flex align-items-center" style="height: 100%;">
+                    <input type="text" name="search" class="search-input" placeholder="Search for orders..." value="<?= isset($_GET['search']) ? esc($_GET['search']) : '' ?>" style="height: 40px;">
+                    <button type="submit" class="search-btn" style="height: 40px;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <div class="dropdown">
+                    <a href="#" class="btn-lg me-2 custom-btn d-flex align-items-center" style="height: 100%;">
+                        <i class="bi bi-person"></i>
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="/viewprofile">View Profile</a>
+                        <a href="/logoutUser  ">Logout</a>
+                        <a href="#">Change Password</a>
+                    </div>
+                </div>
+                <a href="#" class="custom-btn d-flex align-items-center" style="height: 100%;">
+                    <i class="fas fa-shopping-cart mr-2"></i>
                 </a>
             </div>
         </div>
     </nav>
-    <div class="container">
-        <div class="header">
-            <form action="/searchOrders" method="get" class="search-bar">
-                <input type="text" name="search" class="search-input" placeholder="Search for orders..." value="<?= isset($_GET['search']) ? esc($_GET['search']) : '' ?>">
-                <button type="submit" class="search-btn">
-                    <i class="fas fa-search"></i>
-                </button>
-            </form>
-        </div>
+    <div class="container-fluid">
         <div class="row">
             <div class="col-md-3">
                 <div class="category-container">
@@ -497,13 +591,13 @@ if(isset($selectedCategories)){
                             </div>
                         <?php else: ?>
                         <div class="col-12">
-                            <div class="category-container">
-                                <h4 class="filter-title">Your Orders</h4>
+                            <div class="category-containerone">
                                 <div class="row">
                                     <?php foreach ($orderdata as $order ): ?>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="card order-card">
                                                 <div class="position-relative overflow-hidden">
+                                                <a href="/vieworderdetail/<?php echo $order['order_id']; ?>" style="text-decoration: none;">
                                                 <img src="" data-src="<?php echo base_url('imagecontroller/show/' . $order['image']); ?>" class="card-img-top order-image" alt="<?php echo $order['product_name']; ?>">
                                                 </div>
                                                 <div class="card-body">
@@ -527,8 +621,6 @@ if(isset($selectedCategories)){
                                                                 }
                                                             ?>
                                                         </div>
-                                                        <a href="/vieworderdetail/<?php echo $order['order_id']; ?>" class="btn-view-details">
-                                                            Details
                                                         </a>
                                                     </div>
                                                 </div>
@@ -551,6 +643,7 @@ if(isset($selectedCategories)){
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         window.addEventListener('scroll', () => {
             const navbar = document.querySelector('.navbar');

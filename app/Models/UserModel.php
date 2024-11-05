@@ -19,4 +19,9 @@ class UserModel extends Model
         $query = "SELECT * FROM users WHERE email = ? AND password = ?";
         return $this->db->query($query, [$email, $password])->getRowArray();
     }
+
+    public function getUserbyID($id){
+        $query = "SELECT * FROM users WHERE id = '$id'";
+        return $this->db->query($query,[$id])->getRowArray();
+    }
 }

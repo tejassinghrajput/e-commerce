@@ -17,5 +17,11 @@ return [
     'no_search_data' =>  'No products found for the provided name.',
     'no_search_input' => 'Please enter a search term.',
     'categories_empty_error' => 'No category selected',
-    'no_category_selected' => 'Please provide both rating and feedback text'
+    'no_category_selected' => 'Please provide both rating and feedback text',
+    'default_address_change_success' => 'Default Address changed successfully',
+    'default_address_change_failed' => 'Address not found or already set as default.',
+    'address_edit_successfully' => 'Address edited successfully.',
+    'delete_address_successfull' => 'Address Deleted Successfully',
+    'delete_address_fail' => 'Unable to Delete Address',
+    'delete_address_fail_default' => 'Unable to delete default address'
 ];

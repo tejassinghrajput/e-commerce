@@ -25,9 +25,11 @@ abstract class BaseController extends Controller
 {
     protected $sessioncheck = false;
     protected $db;
+    protected $session;
 
     public function __construct() {
         $this->checkSession();
+        $this->session=\Config\Services::session();
         $this->db = Database::connect();
     }
 
