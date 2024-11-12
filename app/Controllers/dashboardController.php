@@ -1,18 +1,18 @@
 <?php
 
 namespace App\Controllers;
-use App\Models\OrderModel;
+use App\Models\ProductsModel;
 use App\Models\FeedbackModel;
 use App\Models\UserModel;
 
 class dashboardController extends BaseController{
 
-    protected $orderModel;
+    protected $productsModel;
     protected $feedbackModel;
     protected $userModel;
     public function __construct(){
         parent::__construct();
-        $this->orderModel = new OrderModel();
+        $this->productsModel = new ProductsModel();
         $this->feedbackModel = new FeedbackModel();
         $this->userModel = new UserModel();
     }
@@ -22,7 +22,7 @@ class dashboardController extends BaseController{
             return redirect()->to('/login');
         }
         $selectedCategories = $this->request->getGet('categories') ?? [];
-        $allOrders = $this->orderModel->getAllOrders();
+        $allOrders = $this->productsModel->getAllOrders();
         $feedbackdata = $this->feedbackModel->getallaverageratings();
         $averageratings = [];
         foreach ($feedbackdata as $feedback) {
@@ -30,35 +30,35 @@ class dashboardController extends BaseController{
         }
 
         if (!empty($selectedCategories)) {
-            $filteredOrders = array_filter($allOrders, function($order) use ($selectedCategories) {
-                return in_array($order['category'], $selectedCategories);
+            $filteredOrders = array_filter($allOrders, function($product) use ($selectedCategories) {
+                return in_array($product['category_name'], $selectedCategories);
             });
-            $orderdata = empty($filteredOrders) ? ['no_results' => true] : $filteredOrders;
+            $productdata = empty($filteredOrders) ? ['no_results' => true] : $filteredOrders;
         } else {
-            $orderdata = $allOrders;
+            $productdata = $allOrders;
         }
-        if (empty($orderdata) || (isset($orderdata['no_results']) && $orderdata['no_results'])) {
+        if (empty($productdata) || (isset($productdata['no_results']) && $productdata['no_results'])) {
             session()->setFlashdata('message', lang('messages.categories_error'));
         }
         return view('/userpanel/dashboard', [
-            'orderdata' => $orderdata,
+            'productdata' => $productdata,
             'averageRatings' => $averageratings,
             'selectedCategories' => $selectedCategories
         ]);
     }
 
-    public function orderDetails($id){
+    public function productDetails($id){
 
         if(!$this->sessioncheck){
             return redirect()->to('/login');
         }
-        $orderinfo = $this->orderModel->getOrderById($id);
+        $productinfo = $this->productsModel->getOrderById($id);
         $feedbackinfo = $this->feedbackModel->getFeedbackByOrderId($id);
-        if($orderinfo){
-            session()->setFlashdata('orderinfo',$orderinfo);
+        if($productinfo){
+            session()->setFlashdata('productinfo',$productinfo);
         }
         else{
-            session()->setFlashdata('orderinfo',[]);
+            session()->setFlashdata('productinfo',[]);
         }
         if(!empty($feedbackinfo) && is_array($feedbackinfo)){
             $sum=0;
@@ -77,7 +77,7 @@ class dashboardController extends BaseController{
         else{
             session()->setFlashdata('feedbackinfo',[]);
         }
-        return view('/userpanel/orderdetails');
+        return view('/userpanel/productdetails');
     }
 
     public function searchOrder(){
@@ -90,12 +90,12 @@ class dashboardController extends BaseController{
             return redirect()->to('/dashboard');
         }    
         $data['search'] = $search;
-        $results = $this->orderModel->searchOrdersByProductName($search );
+        $results = $this->productsModel->searchOrdersByProductName($search );
 
         if ($results->getNumRows() > 0) {
-            $data['orderdata']=$results->getResultArray();
+            $data['productdata']=$results->getResultArray();
         } else {
-            $data['orderdata'] = [];
+            $data['productdata'] = [];
             session()->setFlashdata('message',lang('messages.no_search_data'));
         }
         $data['selectedCategories'] = [];
@@ -111,12 +111,12 @@ class dashboardController extends BaseController{
         if(empty($selectedCategories)){
             return redirect()->to('/dashboard');
         }
-        $results = $this->orderModel->getOrdersByCategories($selectedCategories);
+        $results = $this->productsModel->getOrdersByCategories($selectedCategories);
 
         if ($results->getNumRows() > 0) {
-            $orderdata = $results->getResultArray();
+            $productdata = $results->getResultArray();
         } else {
-            $orderdata = ['no_results' => true];
+            $productdata = ['no_results' => true];
             session()->setFlashdata('message', lang('messages.categories_error'));
         }
         $feedbackdata = $this->feedbackModel->getallaverageratings();
@@ -124,7 +124,7 @@ class dashboardController extends BaseController{
         foreach ($feedbackdata as $feedback) {
             $averageratings[$feedback['order_id']] = $feedback['avg_star'];
         }
-        session()->set('filtered_orderdata', $orderdata);
+        session()->set('filtered_productdata', $productdata);
         session()->set('filtered_averageRatings', $averageratings);
         session()->set('selected_categories', $selectedCategories);
         return redirect()->to('/dashboard?' . http_build_query(['categories' => $selectedCategories]));
@@ -138,5 +138,65 @@ class dashboardController extends BaseController{
         $userdetails=$this->userModel->getUserbyID($userid);
         $this->session->setFlashdata('userdetails', $userdetails);
         return view("/userpanel/viewprofile");
+    }
+
+    public function updatePassword(){
+        if (!$this->sessioncheck) {
+            return redirect()->to('/login');
+        }
+        $userId = $this->session->get('id');
+        $currentPassword = $this->request->getPost('currentPassword');
+        $newPassword = $this->request->getPost('newPassword');
+        $confirmPassword = $this->request->getPost('confirmPassword');
+        
+        $data = [
+            'status' => false,
+            'message' => ''
+        ];
+
+        if($currentPassword == $newPassword){
+            $data = [
+                'status' => false,
+                'message' => 'New password cannot be same as new password'
+            ];
+            return $this->response->setJSON(['data' => $data]);
+        }
+        else{
+
+            $checkPassword = $this->db->query("SELECT password FROM users WHERE id = '$userId'")->getRow();
+
+            if($newPassword == $confirmPassword){
+                if($checkPassword->password == $currentPassword){
+                    $result = $this->userModel->updatepasswordbyUserid($userId, $newPassword);
+
+                    if($result){
+                        $data = [
+                            'status' => true,
+                            'message' => 'Password updated successfully'
+                        ];
+                    }
+                    else{
+                        $data = [
+                            'status' => false,
+                            'message' => 'Unkown error occured'
+                        ];
+                    }
+                }
+                else{
+                    $data = [
+                        'status' => false,
+                        'message' => 'You have entered wrong password.'
+                    ];
+                }
+                
+            }
+            else{
+                $data = [
+                    'status' => false,
+                    'message' => 'Passwords do not match'
+                ];
+            }
+        }
+        return $this->response->setJSON(['data' => $data]);
     }
 }

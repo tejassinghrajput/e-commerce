@@ -1,0 +1,38 @@
+__ci_last_regenerate|i:1731404547;_ci_previous_url|s:41:"http://localhost:8080/index.php/orderinfo";email|s:7:"t@t.com";id|s:2:"61";name|s:6:"User 1";payment_method|s:8:"cashfree";paymentId|s:18:"pay_PKLY6FyxU0kuJZ";payment_data|s:1258:"[
+    {
+        "auth_id": null,
+        "authorization": null,
+        "bank_reference": null,
+        "cf_payment_id": "5114914976459",
+        "entity": "payment",
+        "error_details": null,
+        "is_captured": false,
+        "order_amount": 8430.75,
+        "order_id": "673322f356ba7",
+        "payment_amount": 8430.75,
+        "payment_completion_time": "2024-11-12T15:12:21+05:30",
+        "payment_currency": "INR",
+        "payment_gateway_details": {
+            "gateway_name": "CASHFREE",
+            "gateway_order_id": "2188011611",
+            "gateway_payment_id": "5114914976459",
+            "gateway_order_reference_id": "",
+            "gateway_status_code": "",
+            "gateway_settlement": "cashfree"
+        },
+        "payment_group": "net_banking",
+        "payment_message": null,
+        "payment_method": {
+            "netbanking": {
+                "channel": "link",
+                "netbanking_bank_code": 3032,
+                "netbanking_bank_name": "Kotak Mahindra Bank",
+                "netbanking_ifsc": "",
+                "netbanking_account_number": ""
+            }
+        },
+        "payment_offers": [],
+        "payment_status": "PENDING",
+        "payment_time": "2024-11-12T15:12:14+05:30"
+    }
+]";orderData|O:8:"stdClass":6:{s:5:"items";a:1:{i:0;O:8:"stdClass":5:{s:10:"product_id";i:4;s:7:"cart_id";i:335;s:12:"product_name";s:10:"Kids Dress";s:5:"price";s:7:"2599.00";s:5:"image";s:57:"http://localhost:8080/imagecontroller/show/kids_dress.jpg";}}s:8:"subtotal";s:7:"7797.00";s:8:"shipping";s:4:"9.99";s:3:"tax";s:6:"623.76";s:5:"total";s:7:"8430.75";s:9:"addressId";s:2:"42";}status|s:6:"Failed";__ci_vars|a:2:{s:6:"status";s:3:"old";s:9:"orderData";s:3:"old";}

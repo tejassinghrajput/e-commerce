@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login & Registration Panel</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
         body {
             background: linear-gradient(120deg, #a1c4fd, #c2e9fb);
@@ -173,10 +175,11 @@
                         <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Enter your password" required>
                     </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-custom">Login</button>
+                        <button type="submit" class="btn btn-custom">Login</button><br>
                     </div>
                 </form>
             </div>
+            
             <div class="panel-footer">
                 Don’t have an account? <a href="/register" class="toggle-link" onclick="togglePanel()">Register here</a>
             </div>
@@ -193,33 +196,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function togglePanel() {
-            const loginPanel = document.getElementById('loginPanel');
-            const registerPanel = document.getElementById('registerPanel');
-            loginPanel.classList.toggle('active');
-            registerPanel.classList.toggle('active');
-        }
-
-        function showLoading() {
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            loadingSpinner.classList.add('show');
-        }
-
-        function showNotification(message) {
-            const notificationPopup = document.getElementById('notificationPopup');
-            notificationPopup.innerText = message;
-            notificationPopup.style.display = 'block';
-            notificationPopup.classList.add('notification');
-            setTimeout(() => {
-                notificationPopup.style.display = 'none';
-            }, 3000);
-        }
-
+        
         <?php
             $message=session()->getFlashdata('message');
-             if (isset($message) && !empty($message)) { ?>
+            if (isset($message) && !empty($message)) { ?>
             showNotification("<?php echo $message; ?>");
         <?php } ?>
     </script>
+    <script src="<?= base_url('assets/app.js') ?>"></script>
 </body>
 </html>

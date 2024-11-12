@@ -6,6 +6,9 @@
  *---------------------------------------------------------------
  */
 
+ require_once __DIR__ . '/../vendor/autoload.php';  // Ensure this is included.
+
+
 $minPhpVersion = '8.1'; // If you update this, don't forget to update `spark`.
 if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
     $message = sprintf(

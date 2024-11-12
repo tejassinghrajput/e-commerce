@@ -11,7 +11,7 @@ class ImageController extends Controller{
         if (!file_exists($path)) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound($filename);
         }
-        $this->response->setHeader('Content-Type', 'image/jpeg');
+        $this->response->setHeader('Content-Type', 'image/jpg');
         return $this->response->setBody(file_get_contents($path));
     }
 }

@@ -414,42 +414,67 @@
             background-color: rgba(0, 123, 255, 0.1) !important;
             color: var(--dashboard--color) !important;
         }
+
+        .dropdown {
+        position: relative;
+        display: inline-block;
+        }
+
+        .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        }
+
+        .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        }
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+            background-color: #3e8e41;
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link.dropdown{
+            margin-right: 20px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .nav-link:hover .dropdown-content {
+            display: block;
+        }
+        
         <?php
         $userdetails=session()->getFlashdata('userdetails');
         ?>
     </style>
 </head>
 <body>
-    <nav class="navbar" style="height: 60px;">
-        <div class="d-flex justify-content-between align-items-center w-100 h-100">
-            <div>
-                <a href="/dashboard" class="nav-link me-3">
-                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                </a>
-            </div>
-            <div class="d-flex align-items-center">
-                <form action="/searchOrders" method="get" class="search-bar me-2 d-flex align-items-center" style="height: 100%;">
-                    <input type="text" name="search" class="search-input" placeholder="Search for orders..." value="<?= isset($_GET['search']) ? esc($_GET['search']) : '' ?>" style="height: 40px;">
-                    <button type="submit" class="search-btn" style="height: 40px;">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </form>
-                <div class="dropdown">
-                    <a href="#" class="btn-lg me-2 custom-btn d-flex align-items-center" style="height: 100%;">
-                        <i class="bi bi-person"></i>
-                    </a>
-                    <div class="dropdown-content">
-                        <a href="/viewprofile">View Profile</a>
-                        <a href="/logoutUser  ">Logout</a>
-                        <a href="#">Change Password</a>
-                    </div>
-                </div>
-                <a href="#" class="custom-btn d-flex align-items-center" style="height: 100%;">
-                    <i class="fas fa-shopping-cart mr-2"></i>
-                </a>
-            </div>
-        </div>
-    </nav>
+    <?php include 'header.php'; ?>
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="defaulttoast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-body">
@@ -625,7 +650,8 @@
                 $.ajax({
                     type: 'GET',
                     url: '/getSavedAddresses',
-                    success: function(data) { 
+                    success: function(response) { 
+                        let data = response.addresses || [];
                         $('#savedAddresses').empty();
                         if (data.length === 0) {
                             $('#savedAddresses').html(`

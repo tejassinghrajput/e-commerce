@@ -9,33 +9,15 @@ class OrderModel extends Model
     protected $table = 'orders';
     protected $primaryKey = 'order_id';
 
-    public function getAllOrders(){
-        $query = "SELECT * FROM orders";
-        return $this->db->query($query)->getResultArray();
+    public function saveOrder($userId, $address_id, $total_amount, $info, $paymentID){
+
+        $query = "INSERT INTO orders (user_id, address_id, total_amount, `status`, payment_id) VALUES ('$userId','$address_id','$total_amount','$info', '$paymentID')";
+        $run_query = $this->db->query($query);
     }
 
-    public function getOrderById($id){
-        $query = "SELECT * FROM orders WHERE order_id = ?";
-        return $this->db->query($query, [$id])->getRowArray();
+    public function getorderIdTotalamtandstatusbyUserId($userId){
+        $query = "SELECT order_id, status, total_amount FROM orders where user_id ='$userId' ";
+        return $query = $this->db->query($query)->getResultArray();;
     }
 
-    public function getOrdersByCategories(array $categories){
-        $query = "SELECT * FROM orders WHERE 1=1";
-        $params = [];
-
-        if (!empty($categories)) {
-            $placeholders = implode(',', array_fill(0, count($categories), '?'));
-            $query .= " AND category IN ($placeholders)";
-            $params = $categories;
-        }
-
-        return $this->db->query($query, $params);
-    }
-    
-    public function searchOrdersByProductName($name){
-        $query = "SELECT * FROM orders WHERE product_name LIKE ?";
-        $searchtext = '%' . $name . '%';
-
-        return $this->db->query($query, [$searchtext]);
-    }
 }

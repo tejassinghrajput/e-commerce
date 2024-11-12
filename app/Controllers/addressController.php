@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Controllers;
-use App\Models\OrderModel;
-use App\Models\FeedbackModel;
 use App\Models\UserModel;
 use App\Models\AddressModel;
 
@@ -13,8 +11,6 @@ class addressController extends BaseController{
     protected $userModel;
     public function __construct(){
         parent::__construct();
-        $this->orderModel = new OrderModel();
-        $this->feedbackModel = new FeedbackModel();
         $this->userModel = new UserModel();
         $this->addressModel = new AddressModel();
     }
@@ -40,7 +36,7 @@ class addressController extends BaseController{
 
         $id=$this->session->get('id');
         $result = $this->addressModel->getAddressbyId($id);
-        return $this->response->setJSON($result);
+        return $this->response->setJSON(['success' => true, 'addresses' => $result]);
     }
 
     public function makedefault(){

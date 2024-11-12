@@ -24,4 +24,9 @@ class UserModel extends Model
         $query = "SELECT * FROM users WHERE id = '$id'";
         return $this->db->query($query,[$id])->getRowArray();
     }
+
+    public function updatepasswordbyUserid($userId, $newPassword){
+        $query = "UPDATE users SET password = '$newPassword' WHERE id = '$userId'";
+        return $query = $this->db->query($query);
+    }
 }

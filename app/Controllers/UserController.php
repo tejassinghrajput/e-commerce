@@ -25,8 +25,13 @@ class UserController extends BaseController{
         }
         return view('/userpanel/register.php');
     }
+
     public function logout(){
         session()->destroy();
         return redirect()->to('/login');
+    }
+
+    public function changepassword(){
+        return view("/userpanel/changepassword");
     }
 }

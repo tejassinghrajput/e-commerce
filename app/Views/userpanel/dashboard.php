@@ -497,13 +497,52 @@
             background-color: #3e8e41;
         }
 
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link.dropdown{
+            margin-right: 20px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .nav-link:hover .dropdown-content {
+            display: block;
+        }
+
+        .breadcrumb {
+            background-color: #f8f9fa;
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: ">";
+        }
+
+        .breadcrumb-item a {
+            color: var(--dashboard--color);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <?php 
-if(isset($orderdata)){
-    $orderdata = $orderdata;
+if(isset($productdata)){
+    $productdata = $productdata;
 }else{
-    $orderdata=[];
+    $productdata=[];
 }
 if(isset($averageRatings)){
     $averageRatings = $averageRatings;
@@ -517,36 +556,21 @@ if(isset($selectedCategories)){
 }
 ?>
 <body>
-    <nav class="navbar" style="height: 60px;">
-        <div class="d-flex justify-content-between align-items-center w-100 h-100">
-            <div>
-                <a href="/dashboard" class="nav-link me-3">
-                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                </a>
-            </div>
-            <div class="d-flex align-items-center">
-                <form action="/searchOrders" method="get" class="search-bar me-2 d-flex align-items-center" style="height: 100%;">
-                    <input type="text" name="search" class="search-input" placeholder="Search for orders..." value="<?= isset($_GET['search']) ? esc($_GET['search']) : '' ?>" style="height: 40px;">
-                    <button type="submit" class="search-btn" style="height: 40px;">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </form>
-                <div class="dropdown">
-                    <a href="#" class="btn-lg me-2 custom-btn d-flex align-items-center" style="height: 100%;">
-                        <i class="bi bi-person"></i>
-                    </a>
-                    <div class="dropdown-content">
-                        <a href="/viewprofile">View Profile</a>
-                        <a href="/logoutUser  ">Logout</a>
-                        <a href="#">Change Password</a>
-                    </div>
-                </div>
-                <a href="#" class="custom-btn d-flex align-items-center" style="height: 100%;">
-                    <i class="fas fa-shopping-cart mr-2"></i>
-                </a>
-            </div>
-        </div>
-    </nav>
+    <?php include 'header.php'; ?>
+    <?php if(isset($breadcrumbs) && !empty($breadcrumbs)): ?>
+        <nav aria-label="breadcrumb" class="container mt-3">
+            <ol class="breadcrumb">
+                <?php $lastKey = array_key_last($breadcrumbs); ?>
+                <?php foreach($breadcrumbs as $label => $url): ?>
+                    <?php if($url === '#'): ?>
+                        <li class="breadcrumb-item active" aria-current="page"><?= $label ?></li>
+                    <?php else: ?>
+                        <li class="breadcrumb-item"><a href="<?= $url ?>"><?= $label ?></a></li>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </ol>
+        </nav>
+    <?php endif; ?>
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-3">
@@ -554,24 +578,19 @@ if(isset($selectedCategories)){
                     <h4 class="filter-title">Filters</h4>
                     <form action="/applyFilters" method="get" id="filterForm">
                         <div class="category-item">
-                            <input class="form-check-input" type="checkbox" value="Electronics" id="category1" name="categories[]"
-                                <?php echo in_array('Electronics', $selectedCategories) ? 'checked' : ''; ?>>
-                            <label class="category-checkbox" for="category1">Electronics</label>
+                            <input class="form-check-input" type="checkbox" value="men" id="category1" name="categories[]"
+                                <?php echo in_array('men', $selectedCategories) ? 'checked' : ''; ?>>
+                            <label class="category-checkbox" for="category1">Men</label>
                         </div>
                         <div class="category-item">
-                            <input class="form-check-input" type="checkbox" value="Accessories" id="category2" name="categories[]"
-                                <?php echo in_array('Accessories', $selectedCategories) ? 'checked' : ''; ?>>
-                            <label class="category-checkbox" for="category2">Accessories</label>
+                            <input class="form-check-input" type="checkbox" value="women" id="category2" name="categories[]"
+                                <?php echo in_array('women', $selectedCategories) ? 'checked' : ''; ?>>
+                            <label class="category-checkbox" for="category2">Women</label>
                         </div>
                         <div class="category-item">
-                            <input class="form-check-input" type="checkbox" value="Furniture" id="category3" name="categories[]"
-                                <?php echo in_array('Furniture', $selectedCategories) ? 'checked' : ''; ?>>
-                            <label class="category-checkbox" for="category3">Furniture</label>
-                        </div>
-                        <div class="category-item">
-                            <input class="form-check-input" type="checkbox" value="Fitness" id="category4" name="categories[]"
-                                <?php echo in_array('Fitness', $selectedCategories) ? 'checked' : ''; ?>>
-                            <label class="category-checkbox" for="category4">Fitness</label>
+                            <input class="form-check-input" type="checkbox" value="kids" id="category3" name="categories[]"
+                                <?php echo in_array('kids', $selectedCategories) ? 'checked' : ''; ?>>
+                            <label class="category-checkbox" for="category3">Kids</label>
                         </div>
                         <button type="submit" class="btn-submit" id="filterSubmitBtn">
                             <span>Apply Filters</span>
@@ -581,8 +600,8 @@ if(isset($selectedCategories)){
             </div>
             <div class="col-md-9">
                 <div class="row">
-                    <?php if (is_array($orderdata) && !empty($orderdata)): ?>
-                        <?php if (isset($orderdata['no_results'])): ?>
+                    <?php if (is_array($productdata) && !empty($productdata)): ?>
+                        <?php if (isset($productdata['no_results'])): ?>
                             <div class="col-12">
                                 <div class="empty-state">
                                     <i class="fas fa-search"></i>
@@ -593,19 +612,19 @@ if(isset($selectedCategories)){
                         <div class="col-12">
                             <div class="category-containerone">
                                 <div class="row">
-                                    <?php foreach ($orderdata as $order ): ?>
+                                    <?php foreach ($productdata as $product ): ?>
                                         <div class="col-md-3">
                                             <div class="card order-card">
                                                 <div class="position-relative overflow-hidden">
-                                                <a href="/vieworderdetail/<?php echo $order['order_id']; ?>" style="text-decoration: none;">
-                                                <img src="" data-src="<?php echo base_url('imagecontroller/show/' . $order['image']); ?>" class="card-img-top order-image" alt="<?php echo $order['product_name']; ?>">
+                                                <a href="/vieworderdetail/<?php echo $product['product_id']; ?>" style="text-decoration: none;">
+                                                <img src="" data-src="<?php echo base_url('imagecontroller/show/' . $product['image']); ?>" class="card-img-top order-image" alt="<?php echo $product['product_name']; ?>">
                                                 </div>
                                                 <div class="card-body">
                                                     <div class="d-flex justify-content-between align-items-center">
-                                                        <h5 class="order-title mb-0"><?php echo $order['product_name']; ?></h5>
+                                                        <h5 class="order-title mb-0"><?php echo $product['product_name']; ?></h5>
                                                         <div class="product-rating">
                                                             <?php 
-                                                                $averageRating = isset($averageRatings[$order['order_id']]) ? $averageRatings[$order['order_id']] : 0;
+                                                                $averageRating = isset($averageRatings[$product['product_id']]) ? $averageRatings[$product['product_id']] : 0;
                                                                 $fullStars = floor($averageRating);
                                                                 $halfStar = $averageRating - $fullStars >= 0.5;
                                                                 for ($i = 1; $i <= 5; $i++) {
@@ -623,6 +642,7 @@ if(isset($selectedCategories)){
                                                         </div>
                                                         </a>
                                                     </div>
+                                                    <p class="card-text">Price: Rs.<?php echo number_format($product['price'], 2); ?></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -644,38 +664,6 @@ if(isset($selectedCategories)){
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        window.addEventListener('scroll', () => {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const images = document.querySelectorAll('.order-image');
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        img.src = img.dataset.src;
-                        observer.unobserve(img);
-                    }
-                });
-            });
-            images.forEach(img => imageObserver.observe(img));
-        });
-    </script>
+    <script src="<?= base_url('assets/app.js') ?>"></script>
 </body>
 </html>
