@@ -4,23 +4,29 @@ namespace App\Controllers;
 use App\Models\ProductsModel;
 use App\Models\FeedbackModel;
 use App\Models\UserModel;
+use App\Models\MongoModel;
 
 class dashboardController extends BaseController{
 
     protected $productsModel;
     protected $feedbackModel;
+    protected $mongoModel;
     protected $userModel;
     public function __construct(){
         parent::__construct();
         $this->productsModel = new ProductsModel();
         $this->feedbackModel = new FeedbackModel();
         $this->userModel = new UserModel();
+        $this->mongoModel = new MongoModel();
     }
+
 
     public function viewDashboard(){
         if (!$this->sessioncheck) {
             return redirect()->to('/login');
         }
+
+        $this->mongoModel->addAction('/dashboard', []);
         $selectedCategories = $this->request->getGet('categories') ?? [];
         $allOrders = $this->productsModel->getAllOrders();
         $feedbackdata = $this->feedbackModel->getallaverageratings();
@@ -54,7 +60,13 @@ class dashboardController extends BaseController{
         }
         $productinfo = $this->productsModel->getOrderById($id);
         $feedbackinfo = $this->feedbackModel->getFeedbackByOrderId($id);
+
+        $metadata = [
+            'product_id' => $productinfo['product_id'],
+            'product_name' => $productinfo['product_name']
+        ];
         if($productinfo){
+            $this->mongoModel->addAction("vieworderdetail/", $metadata);
             session()->setFlashdata('productinfo',$productinfo);
         }
         else{
@@ -81,6 +93,7 @@ class dashboardController extends BaseController{
     }
 
     public function searchOrder(){
+
         if (!$this->sessioncheck) {
             return redirect()->to('/login');
         }
@@ -94,10 +107,23 @@ class dashboardController extends BaseController{
 
         if ($results->getNumRows() > 0) {
             $data['productdata']=$results->getResultArray();
+            $metadata['search'] = $search;
+            $metadata['product_name'] = "";
+            $metadata['product_id'] = "";
+            foreach($data['productdata'] as $productdata){
+                $metadata['product_name'] = $metadata['product_name']."{".$productdata['product_name']."},";
+                $metadata['product_id'] = $metadata['product_id']."{".$productdata['product_id']."},";
+            }
+            $this->mongoModel->addAction("searchOrders/".$search, $metadata);
         } else {
+            $metadata['search'] = $search;
+            $metadata['error'] = 'No such products exists';
+            $this->mongoModel->addAction("searchOrders/".$search, $metadata);
             $data['productdata'] = [];
             session()->setFlashdata('message',lang('messages.no_search_data'));
         }
+
+
         $data['selectedCategories'] = [];
         $data['averageRatings'] = [];
         return view('userpanel/dashboard', $data);
@@ -109,15 +135,44 @@ class dashboardController extends BaseController{
         }
         $selectedCategories = $this->request->getGet('categories') ?? [];
         if(empty($selectedCategories)){
+            $metadata['selected_categories'] = "";
+            $metadata["error"] = "The category entered is null";
+            $this->mongoModel->addAction("/applyfilters",$metadata);
             return redirect()->to('/dashboard');
         }
         $results = $this->productsModel->getOrdersByCategories($selectedCategories);
 
+
         if ($results->getNumRows() > 0) {
+
             $productdata = $results->getResultArray();
+            $metadata['selected_categories'] = "/applyFilters?=";
+            $metadata['product_name'] = "";
+            $metadata['product_id'] = "";
+            $category ="";
+
+            foreach($selectedCategories as $category){
+                $metadata['selected_categories'] = $metadata['selected_categories']."&".$category;
+            }
+            foreach($productdata as $productsdata){
+                $metadata['product_name'] = $metadata['product_name']."{".$productsdata['product_name']."},";
+                $metadata['product_id'] = $metadata['product_id']."{".$productsdata['product_id']."},";
+            }
+            $this->mongoModel->addAction("/applyFilters",$metadata);
         } else {
+
+            $metadata['selected_categories'] = "/applyFilters?=";
+            $metadata['error'] = "No such products found.";
+            $category ="";
+
+            foreach($selectedCategories as $category){
+                $metadata['selected_categories'] = $metadata['selected_categories']."&".$category;
+            }
+            $this->mongoModel->addAction("/applyFilters",$metadata);
+
             $productdata = ['no_results' => true];
             session()->setFlashdata('message', lang('messages.categories_error'));
+
         }
         $feedbackdata = $this->feedbackModel->getallaverageratings();
         $averageratings = [];
@@ -136,6 +191,9 @@ class dashboardController extends BaseController{
         }
         $userid=$this->session->get('id');
         $userdetails=$this->userModel->getUserbyID($userid);
+        
+        $metadata['info'] = "user visited its profile.";
+        $this->mongoModel->addAction("/viewprofile",$metadata);
         $this->session->setFlashdata('userdetails', $userdetails);
         return view("/userpanel/viewprofile");
     }
@@ -159,6 +217,10 @@ class dashboardController extends BaseController{
                 'status' => false,
                 'message' => 'New password cannot be same as new password'
             ];
+            
+            $metadata['info'] = "User tried to change its password.";
+            $metadata['error'] = "Pass error - New password cannot be same as new password";
+            $this->mongoModel->addAction("/changepassword",$metadata);
             return $this->response->setJSON(['data' => $data]);
         }
         else{
@@ -174,6 +236,9 @@ class dashboardController extends BaseController{
                             'status' => true,
                             'message' => 'Password updated successfully'
                         ];
+                        $metadata['info'] = "User tried to change its password.";
+                        $metadata['success'] = "Password successfully changed";
+                        $this->mongoModel->addAction("/changepassword",$metadata);
                     }
                     else{
                         $data = [
@@ -187,14 +252,20 @@ class dashboardController extends BaseController{
                         'status' => false,
                         'message' => 'You have entered wrong password.'
                     ];
+                    $metadata['info'] = "User tried to change its password.";
+                    $metadata['error'] = "Pass error - User entered wrong password.";
+                    $this->mongoModel->addAction("/changepassword",$metadata);
                 }
-                
             }
             else{
                 $data = [
                     'status' => false,
                     'message' => 'Passwords do not match'
                 ];
+                
+                $metadata['info'] = "User tried to change its password.";
+                $metadata['error'] = "Pass error - Both new passwords does not match.";
+                $this->mongoModel->addAction("/changepassword",$metadata);
             }
         }
         return $this->response->setJSON(['data' => $data]);

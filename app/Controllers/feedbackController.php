@@ -105,4 +105,8 @@ class feedbackController extends BaseController{
         }
         return redirect()->to("/vieworderdetail/$id");
     }
+
+    public function feedback_reaction(){
+        return $this->response->setJSON(['status'=> 'success', 'message'=>'Feedback Added Successfully']);
+    }
 }

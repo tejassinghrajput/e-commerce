@@ -4,7 +4,8 @@
 return [
     'registration_success' => 'Registration Success',
     'registration_failed' => 'Registration Failed',
-    'login_failed' => 'Invalid Username or Password',
+    'login_failed' => 'You have entered wrong password',
+    'user_not_found' => 'You have entered wrong email',
     'feedback_added' => 'Feedback has been added successfully',
     'feedback_fail' => 'Unable to add feedback',
     'feedbackstar_not_validated' => 'Can not submit empty star',

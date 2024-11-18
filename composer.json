@@ -16,6 +16,7 @@
         "cashfree/cashfree-pg-sdk-php": "^2.0",
         "guzzlehttp/guzzle": "^7.9",
         "laminas/laminas-escaper": "^2.13",
+        "mongodb/mongodb": "^1.20",
         "psr/log": "^3.0",
         "razorpay/razorpay": "^2.9",
         "sentry/sdk": "^4.0"

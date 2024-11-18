@@ -49,34 +49,37 @@ class Razorpay{
                 'color'             => '#3399cc'
             ]
         ];
-        return view('/userpanel/razorpay_checkout', ['data' => $data, 'orderData' => $orderData]);
+        $request = service('request');
+        $requestData = $request->getPost();
+        return view('/userpanel/razorpay_checkout', ['data' => $data, 'orderData' => $orderData, 'requestData' => $requestData]);
     }
 
     public function verifyPayment($payment_id){
         try {
             $payment = $this->api->payment->fetch($payment_id);
+
             if ($payment->status === 'captured') {
-                return ['status' => 'success'];
+                return ['status' => 'success', 'payment' => $payment->toArray()];
             } else {
-                return ['status' => 'failed'];
+                return ['status' => 'failed', 'payment' => $payment];
             }
         }
         catch (\Exception $e) {
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
-
     public function storePaymentId($paymentData){
         if (isset($paymentData['razorpay_payment_id'])) {
             session()->set('paymentId',$paymentData['razorpay_payment_id']);
-            session()->set('payment_data',json_encode($paymentData));
+            
             $verification = $this->verifyPayment($paymentData['razorpay_payment_id']);
             if ($verification['status'] === 'success') {
+                session()->set('payment_data',json_encode($verification));
                 return ['status' => 'success'];
             } else {
+                session()->set('payment_data',json_encode($verification));
                 return ['status' => 'failed'];
             }
-            return ['status' => 'error'];
         }
     }
 }

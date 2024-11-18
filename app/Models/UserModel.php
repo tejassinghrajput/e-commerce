@@ -20,6 +20,11 @@ class UserModel extends Model
         return $this->db->query($query, [$email, $password])->getRowArray();
     }
 
+    public function getUserbyEmail($email){
+        $query = "SELECT * FROM users WHERE email = '$email'";
+        return $this->db->query($query)->getFirstRow();
+    }
+
     public function getUserbyID($id){
         $query = "SELECT * FROM users WHERE id = '$id'";
         return $this->db->query($query,[$id])->getRowArray();

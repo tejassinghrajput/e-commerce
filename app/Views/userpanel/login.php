@@ -202,6 +202,15 @@
             if (isset($message) && !empty($message)) { ?>
             showNotification("<?php echo $message; ?>");
         <?php } ?>
+        function showNotification(message) {
+            const notificationPopup = document.getElementById('notificationPopup');
+            notificationPopup.innerText = message;
+            notificationPopup.style.display = 'block';
+            notificationPopup.classList.add('notification');
+            setTimeout(() => {
+                notificationPopup.style.display = 'none';
+            }, 3000);
+        }
     </script>
     <script src="<?= base_url('assets/app.js') ?>"></script>
 </body>

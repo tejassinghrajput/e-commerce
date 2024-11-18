@@ -1,17 +1,20 @@
+<?php $productinfo = session()->getFlashdata('productinfo'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Feedback</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <title><?php echo $productinfo['product_name']; ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <style>
         :root {
-            --primary-btn-color: #4a90e2;    /* Professional blue */
-            --primary-btn-hover: #357abd;    /* Darker blue for hover */
-            --submit-btn-color: #00a389;     /* Professional teal */
-            --submit-btn-hover: #008571;     /* Darker teal for hover */
+            --primary-btn-color: #4a90e2;
+            --primary-btn-hover: #357abd;
+            --submit-btn-color: #00a389;
+            --submit-btn-hover: #008571;
             --text-white: #ffffff;
             --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
             --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -23,13 +26,15 @@
             --hover-color: #0066ff;
         }
 
+        
         body {
-            background-color: #f5f5f6;
-            font-family: 'Assistant', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            color: var(--secondary-color);
+            background-color: var(--bg-light);
+            font-family: 'Assistant', sans-serif;
             margin: 0;
-            padding: 0;
+            color: var(--text-primary);
+            overflow-x: hidden;
         }
+
 
         .container {
             background: white;
@@ -359,7 +364,9 @@
         .toast {
             position: fixed;
             top: 80px;
-            right: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050;
             background-color: #333;
             color: white;
             padding: 15px;
@@ -367,7 +374,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
             opacity: 1;
-            transform: translateY(-20px);
+            transform:translate(-50%, -20px);
         }
 
         .toast.show {
@@ -392,47 +399,7 @@
             box-shadow: 0 0 0 3px rgba(255,63,108,0.1);
             outline: none;
         }
-        .navbar {
-            background-color: #ffffff;
-            padding: 12px 40px;
-            box-shadow: 0 0 4px rgba(40, 44, 63, 0.08);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            margin-bottom: 20px;
-        }
-
-        .back-btn {
-            background-color: var(--primary-btn-color);
-            color: var(--text-white);
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            box-shadow: var(--shadow-sm);
-            font-weight: 500;
-            letter-spacing: 0.3px;
-        }
-
-        .back-btn:hover {
-            background-color: var(--primary-btn-hover);
-            color: var(--text-white);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-hover);
-            text-decoration: none;
-        }
-
-        .back-btn i {
-            font-size: 12px;
-            margin-right: 8px;
-            transition: transform 0.3s ease;
-        }
-        .back-btn:hover i {
-            transform: translateX(-3px);
-        }
+        
         .price-cart-container {
             margin-top: 20px;
             display: flex;
@@ -479,6 +446,262 @@
         .product-card {
             position: relative;
         }
+
+        .navbar {
+        background-color: #ffffff;
+        padding: 12px 40px;
+        box-shadow: var(--shadow-sm);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        height: 60px !important; 
+        }
+
+        .navbar.scrolled {
+            padding: 8px 40px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .navbar a {
+            color: var(--text-primary);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            margin-right: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--dashboard--color);
+            transition: width 0.3s ease;
+        }
+
+        .navbar a:hover::after {
+            width: 100%;
+        }
+
+        .search-bar {
+            position: relative;
+            width: 100% !important;
+            max-width: 400px !important;
+            transform: scale(0.98);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus-within {
+            transform: scale(1);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 45px 15px 20px;
+            border: 1px solid #d4d5d9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: #ffffff;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--dashboard--color);
+            box-shadow: 0 0 0 3px rgba(255, 62, 108, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            padding: 12px;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .search-btn:hover {
+            color: var(--dashboard--color);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+            background-color: #3e8e41;
+        }
+
+        .custom-btn {
+            padding: 8px !important;
+        font-size: 1.25rem !important;
+        border-radius: 50% !important;
+        transition: all 0.3s ease !important;
+        background: transparent !important;
+        border: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 40px !important;
+        height: 40px !important;
+        }
+
+        .custom-btn:hover {
+            background-color: rgba(0, 123, 255, 0.1) !important;
+            color: var(--dashboard--color) !important;
+        }
+
+        .dropdown {
+        position: relative;
+        display: inline-block;
+        }
+
+        .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        }
+
+        .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        }
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+            background-color: #3e8e41;
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link.dropdown{
+            margin-right: 20px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .nav-link:hover .dropdown-content {
+            display: block;
+        }
+
+
+        .reaction-link {
+            padding: 10px 20px;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .like-button {
+            color: #4CAF50;
+        }
+
+        .dislike-button {
+            color: #f44336;
+        }
+
+        .like-button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .dislike-button.active {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border-radius: 5px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s, transform 0.5s;
+            z-index: 9999;
+        }
+
+        .toast.success {
+            background-color: #4CAF50;
+        }
+
+        .toast.error {
+            background-color: #f44336;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        
     </style>
 </head>
 <?php
@@ -488,18 +711,7 @@ $successMessage = session()->getFlashdata('successMessage');
 $sum = session()->getFlashdata('sum');
 ?>
 <body>
-    <nav class="navbar">
-        <div class="d-flex justify-content-between align-items-center w-100">
-            <div>
-                <h5 class="mb-0">Order Details</h5>
-            </div>
-            <div>
-                <a href="/dashboard" class="back-btn">
-                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
-                </a>
-            </div>
-        </div>
-    </nav>
+    <?php include("header.php"); ?>
     <div id="mainContainer" class="container">
         <h2 class="page-title">Order Feedback</h2>
         
@@ -566,6 +778,15 @@ $sum = session()->getFlashdata('sum');
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </div>
+                                    <div class="feedback-reactions">
+                                        <a href="javascript:void(0);" id="like-button-<?php echo $feedback['feedback_id']; ?>" class="reaction-link like-button" onclick="handleReaction('<?php echo $feedback['feedback_id']; ?>', 'like')">
+                                            <i class="fas fa-thumbs-up"></i> <span class="like-count">1</span>
+                                        </a>
+                                        <a href="javascript:void(0);" id="dislike-button-<?php echo $feedback['feedback_id']; ?>" class="reaction-link dislike-button" onclick="handleReaction('<?php echo $feedback['feedback_id']; ?>', 'dislike')">
+                                            <i class="fas fa-thumbs-down"></i> <span class="dislike-count">1</span>
+                                        </a>
+                                    </div>
+
                                 <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
@@ -671,39 +892,79 @@ $sum = session()->getFlashdata('sum');
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="<?= base_url('assets/app.js') ?>"></script>
     <script>
-        <?php if(session()->getFlashdata('info') != null): ?>
-                document.addEventListener('DOMContentLoaded', function() {
-                const flashMessage = "<?php echo session()->getFlashdata('info'); ?>";
-                if (flashMessage) {
-                    const toast = document.getElementById('toast');
-                    const toastContent = document.getElementById('toastContent');
-                    toastContent.textContent = flashMessage;
-                    toast.style.display = 'block';
-                    setTimeout(() => {
-                        toast.style.opacity = '0';
-                        setTimeout(() => {
-                            toast.style.display = 'none';
-                            toast.style.opacity = '1';
-                        }, 500);
-                    }, 3000);
-                }
-            });
-
-            function showToast(message) {
+        const flashMessage = "<?php echo session()->getFlashdata('info'); ?>";
+            if (flashMessage) {
                 const toast = document.getElementById('toast');
                 const toastContent = document.getElementById('toastContent');
-                toastContent.textContent = message;
+                toastContent.textContent = flashMessage;
                 toast.style.display = 'block';
-                toast.classList.add('show');
-                
                 setTimeout(() => {
-                    toast.classList.remove('show');
+                    toast.style.opacity = '0';
                     setTimeout(() => {
                         toast.style.display = 'none';
-                    }, 300);
+                        toast.style.opacity = '1';
+                    }, 500);
                 }, 3000);
             }
-        <?php endif; ?>
-    </script>
+
+        function handleReaction(feedbackId, action) {
+            $.ajax({
+                url: 'feedback_reaction',
+                method: 'POST',
+                data: { feedback_id: feedbackId, action: action },
+                success: function(response) {
+                    console.log("AJAX response: ",response);
+                    var data = response;
+                    console.log(data);
+                    if (data.status == 'success') {
+                        showToast(data.message);
+                        updateUI(feedbackId, action);
+                    } else {
+                        showToast(data.message);
+                    }
+                },
+                error: function() {
+                    showToast('An error occurred. Please try again later.');
+                }
+            });
+        }
+        function updateUI(feedbackId, action) {
+            var likeButton = $('#like-button-' + feedbackId);
+            var dislikeButton = $('#dislike-button-' + feedbackId);
+
+            if (action === 'like') {
+                if (likeButton.hasClass('active')) {
+                    likeButton.removeClass('active');
+                } else {
+                    likeButton.addClass('active');
+                    dislikeButton.removeClass('active');
+                }
+            } else if (action === 'dislike') {
+                if (dislikeButton.hasClass('active')) {
+                    dislikeButton.removeClass('active');
+                } else {
+                    dislikeButton.addClass('active');
+                    likeButton.removeClass('active');
+                }
+            }
+        }
+
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastContent = document.getElementById('toastContent');
+            toastContent.textContent = message;
+            toast.style.display = 'block';
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 300);
+            }, 3000);
+        }
+</script>
+
 </body>
 </html>

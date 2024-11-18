@@ -300,22 +300,24 @@
 <body>
     <?php include('header.php'); ?>
     <div class="container">
-        <h1>Your Orders</h1>
+        <h1>Your Transactions</h1>
         <?php if(isset($info)): ?>
             <table>
                 <thead>
                     <tr>
-                        <th>Order ID</th>
+                        <th>Transaction ID</th>
                         <th>Status</th>
                         <th>Total Amount</th>
+                        <th>More Info</th>
                     </tr>
                 </thead>
                 <tbody id="order-table-body">
                     <?php foreach($info as $orderinfo): ?>
                     <tr>
-                        <td><?php echo "#2024_1_".$orderinfo['order_id']; ?></td>
-                        <td><?php echo $orderinfo['status']; ?></td>
+                        <td><?php echo $orderinfo['payment_id']; ?></td>
+                        <td><?php echo strtoupper($orderinfo['status']); ?></td>
                         <td><?php echo "Rs. ".$orderinfo['total_amount']; ?></td>
+                        <td><a href="/paymentDetails/<?php echo $orderinfo['payment_id']; ?>" class="btn btn-success">View Detail</a></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>

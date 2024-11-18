@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting to Cashfree Checkout</title>
     <?php session()->set('orderData',$orderData); ?>
+    <?php session()->set('requestData', $requestData); ?>
 </head>
 <body>
     <h1>Redirecting to payment gateway...</h1>

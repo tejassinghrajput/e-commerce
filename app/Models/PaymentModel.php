@@ -9,8 +9,8 @@ class PaymentModel extends Model
     protected $table = 'payment_details';
     protected $primaryKey = 'id';
 
-    public function insertdetails($paymentID, $payment_data, $userId){
-        $query = "INSERT INTO payment_details (payment_id, payment_data, user_id) VALUES ('$paymentID','$payment_data','$userId')";
+    public function insertdetails($paymentID, $userId){
+        $query = "INSERT INTO payment_details (payment_id, user_id) VALUES ('$paymentID','$userId')";
         return $query = $this->db->query($query);
     }
 }

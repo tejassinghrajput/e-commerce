@@ -16,7 +16,7 @@ class OrderModel extends Model
     }
 
     public function getorderIdTotalamtandstatusbyUserId($userId){
-        $query = "SELECT order_id, status, total_amount FROM orders where user_id ='$userId' ";
+        $query = "SELECT order_id, status, total_amount, payment_id FROM orders where user_id ='$userId' ";
         return $query = $this->db->query($query)->getResultArray();;
     }
 

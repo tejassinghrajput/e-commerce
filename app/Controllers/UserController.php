@@ -2,7 +2,11 @@
 
 namespace App\Controllers;
 
+use App\Models\MongoModel;
+
 class UserController extends BaseController{
+
+    protected $mongoModel;
     protected $sessioncheck=false;
 
     public function __construct(){
@@ -10,6 +14,7 @@ class UserController extends BaseController{
         if($getsession){
             $this->sessioncheck=true;
         }
+        $this->mongoModel=new MongoModel();
     }
     
     public function login(){
@@ -27,6 +32,11 @@ class UserController extends BaseController{
     }
 
     public function logout(){
+
+        $login_session_id = session()->get('login_session_id');
+
+        $this->mongoModel->updatelogbyLogidforLogout($login_session_id);
+
         session()->destroy();
         return redirect()->to('/login');
     }

@@ -5,6 +5,7 @@ use GuzzleHttp\Client;
 use OpenAPI\Client\Api\OrdersApi;
 use OpenAPI\Client\Model\CFOrderRequest;
 use OpenAPI\Client\Model\CFOrderPayRequest;
+use CodeIgniter\HTTP\RequestInterface;
 
 class CashfreePaymentService{
     protected $appId;
@@ -20,8 +21,7 @@ class CashfreePaymentService{
     public function processPayment($orderData){
         $amount = round($orderData->total, 2);
         session()->set('orderData', $orderData);
-        $orderId = 'TEJAS-'.uniqid();//custm orderid
-
+        $orderId = 'TEJAS-'.uniqid();
         $transactionData = new CFOrderRequest([
             'order_id' => $orderId,
             'order_amount' => $amount,
@@ -41,16 +41,18 @@ class CashfreePaymentService{
             'order_splits' => null
         ]);
 
+        $request = service('request');
+        $requestData = $request->getPost();
+        
         try {
             $result = $this->apiInstance->createOrder($this->appId, $this->secretKey, '2022-01-01', false, uniqid(), uniqid(), $transactionData);
-            
-            return view('/userpanel/cashfree_checkout', ['data' => $result, 'orderData' => $orderData]);
+            return view('/userpanel/cashfree_checkout', ['data' => $result, 'orderData' => $orderData, 'requestData' => $requestData]);
         } catch (\Exception $e) {
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 
-    public function verifyPayment($orderId){
+    public function verifyPayment($orderId): array{
         try {
             $result = $this->apiInstance->getOrder($this->appId, $this->secretKey, $orderId, '2022-01-01', false, uniqid(), uniqid());
             if ($result['order_status'] === 'PAID') {
@@ -81,6 +83,8 @@ class CashfreePaymentService{
         $response = curl_exec($curl);
         curl_close($curl);
         $transactions = json_decode($response, true);
+
+        session()->set('paymentId', $transactions[0]['payment_gateway_details']['gateway_payment_id'] ?? null);
 
         if (json_last_error() !== JSON_ERROR_NONE || !is_array($transactions)) {
             throw new Exception("Failed to decode JSON response: " . json_last_error_msg());

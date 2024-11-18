@@ -9,6 +9,7 @@
     <h1>Payment Processing...</h1>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <?php session()->set('orderData',$orderData); ?>
+    <?php session()->set('requestData',$requestData); ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var options = {

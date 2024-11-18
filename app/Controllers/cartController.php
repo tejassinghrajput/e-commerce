@@ -5,12 +5,16 @@ use App\Models\ProductsModel;
 use App\Models\FeedbackModel;
 use App\Models\UserModel;
 use App\Models\CartModel;
+use App\Models\MongoModel;
 
 class cartController extends BaseController{
 
+
     protected $productsModel;
+    protected $mongoModel;
     protected $feedbackModel;
     protected $userModel;
+    protected $cartModel;
 
     public function __construct(){
         parent::__construct();
@@ -18,6 +22,7 @@ class cartController extends BaseController{
         $this->feedbackModel = new FeedbackModel();
         $this->userModel = new UserModel();
         $this->cartModel = new CartModel();
+        $this->mongoModel = new MongoModel();
     }
 
     public function addtoCart(){
@@ -33,11 +38,19 @@ class cartController extends BaseController{
                 break;
             }
         }
+
+        
+        $metadata['product_id'] = $productId; 
+        
         if($productExistsInCart){
             $result = $this->cartModel->updateCartbyproductidanduserId($productId, $userId);
             if ($result) {
+                $metadata['info'] = 'User added a product to cart.';
+                $this->mongoModel->addAction("/addtoCart", $metadata);
                 return $this->response->setJSON(['success' => true, 'message' => 'Item added to cart successfully']);
             } else {
+                $metadata['info'] = 'User added a product to cart but failed.';
+                $this->mongoModel->addAction("/addtoCart", $metadata);
                 return $this->response->setJSON(['success' => false, 'message' => 'Failed to add item to cart']);
             }
         }
@@ -45,8 +58,12 @@ class cartController extends BaseController{
             $result = $this->cartModel->insertintocartbyproductidanduserId($productId, $userId);
 
             if ($result) {
+                $metadata['info'] = 'User added a product to cart.';
+                $this->mongoModel->addAction("/addtoCart", $metadata);
                 return $this->response->setJSON(['success' => true, 'message' => 'Item added to cart successfully']);
             } else {
+                $metadata['info'] = 'User added a product to cart but failed.';
+                $this->mongoModel->addAction("/addtoCart", $metadata);
                 return $this->response->setJSON(['success' => false, 'message' => 'Failed to add item to cart']);
             }
         }
@@ -55,14 +72,6 @@ class cartController extends BaseController{
     public function viewCart(){
         $userId = session()->get('id');
         $status = session()->getFlashdata('status');
-        
-        if ($status === 'completed') {
-            $this->data['message'] = 'Payment completed successfully! Your cart has been cleared.';
-        } elseif ($status === 'pending') {
-            $this->data['message'] = 'Payment is pending. Your cart has been cleared.';
-        } elseif ($status === 'failed') {
-            $this->data['message'] = 'Payment failed! Please try again.';
-        }
         $results = $this->cartModel->getAllcartfromuserId($userId);
         foreach ($results as $key => $result) {
             $product_id = $result['product_id'];
@@ -94,7 +103,7 @@ class cartController extends BaseController{
         $results = $this->cartModel->getAllcartfromuserId($userId);
         foreach ($results as $key => $result) {
             $product_id = $result['product_id'];
-            getproductnameimageandpricebyproductid($product_id);
+            $productinfo = $this->cartModel->getproductnameimageandpricebyproductid($product_id);
             $results[$key]['product_name'] = $productinfo->product_name;
             $results[$key]['price'] = $productinfo->price;
             $results[$key]['image'] = $productinfo->image;
@@ -105,23 +114,10 @@ class cartController extends BaseController{
 
     public function checkout(){
 
+       
         return redirect()->to('/payment');
-        $userId = session()->get('id');
-        $orderinfo = $this->request->getJSON();
-        
-        
-        
-        if($run_query){
-            return $this->response->setJSON([
-                'success' => true,
-            ]);
-        }
-        else{
-            return $this->response->setJSON([
-                'success' => false,
-            ]);
-        }
     }
+
     public function clearCart(){
         $userId = session()->get('id');
 

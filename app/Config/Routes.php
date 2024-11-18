@@ -34,6 +34,8 @@ $routes->get('/vieworderdetail/(:num)','dashboardController::productDetails/$1')
 $routes->post('/submitfeedback/(:num)','feedbackController::submitfeedback/$1');
 $routes->post('/submiteditedfeedback/(:num)','feedbackController::submitedit/$1');
 
+$routes->post('vieworderdetail/feedback_reaction', 'feedbackController::feedback_reaction');
+
 //editing feedbackpage
 $routes->get('/editfeedback/(:num)','feedbackController::editFeedback/$1');
 
@@ -57,7 +59,6 @@ $routes->get('/category/(:any)/(:any)', 'categoryController::displaysubCategory/
 $routes->get('/category/(:any)', 'categoryController::displayCategory/$1');
 
 $routes->get('/admin', 'AdminController::adminHome');
-
 // cart options
 $routes->get('/cart','cartController::viewCart');
 $routes->post('/addtoCart', 'cartController::addtoCart');
@@ -75,6 +76,7 @@ $routes->get('razorpay', 'PaymentController::view');
 $routes->get('/payment-success', 'paymentController::success');
 $routes->get('/payment-failed', 'paymentController::failed');
 $routes->post('/store_payment_id', 'PaymentController::storePaymentid');
+$routes->get('/paymentDetails/(:num)', 'PaymentController::viewDetail/$1');
 
 //cashfree
 
